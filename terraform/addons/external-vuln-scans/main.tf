@@ -25,7 +25,7 @@ data "aws_iam_policy_document" "ecs_events_run_task_with_any_role" {
   statement {
     effect    = "Allow"
     actions   = ["iam:PassRole"]
-    resources = ["*"]
+    resources = [var.execution_iam_role_arn]
   }
 
   statement {
@@ -64,19 +64,9 @@ resource "aws_cloudwatch_event_target" "ecs_scheduled_task" {
       {
         name    = "fleet",
         command = ["fleet", "vuln_processing"]
+        cpu     = var.vuln_processing_cpu,
+        memory  = var.vuln_processing_memory,
       },
-      {
-        resourceRequirements = [
-          {
-            type  = "VCPU",
-            value = "1"
-          },
-          {
-            type  = "MEMORY",
-            value = "4096"
-          }
-        ]
-      }
     ]
   })
 }
